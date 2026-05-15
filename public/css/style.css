@@ -1,0 +1,382 @@
+/* public/css/style.css */
+/* Global Styles for the Job Portal Project */
+
+/* Reset and Core Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f7f6;
+    color: #333;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    overflow: visible; /* Ensure children aren't cut off */
+}
+
+/* Header & Navigation */
+header {
+    background: #35424a;
+    color: #ffffff;
+    padding-top: 15px; /* Adds space above the text */
+    padding-bottom: 15px; /* Adds space below the text */
+    border-bottom: #e8491d 3px solid;
+    min-height: 70px;
+    display: flex;
+    align-items: center; /* Centers items vertically */
+}
+
+header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    max-width: 1200px;
+    margin: auto;
+}
+
+header ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    align-items: center; /* Ensures text and buttons align perfectly */
+}
+
+header li {
+    margin-left: 20px;
+}
+
+header a {
+    color: #ffffff;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 14px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+header a:hover {
+    color: #e8491d;
+}
+
+/* Register Button Styling */
+header .btn-primary {
+    background: #e8491d;
+    padding: 10px 20px;
+    border-radius: 4px;
+    color: #fff !important; /* Forces color to stay white */
+}
+
+header .btn-primary:hover {
+    background: #333;
+}
+
+/* Hero Section */
+#showcase {
+    width: 100%;
+    min-height: 400px; /* Slightly taller to give the text room */
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                url('https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=1350&q=80');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    text-align: center;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0 20px; /* Prevents text from hitting edges */
+    margin-bottom: 0; /* Ensures no gap before the next div */
+    position: relative;
+    z-index: 1;
+    overflow: visible;
+    margin: 0;
+    padding: 0;
+    left: 0;
+}
+
+#showcase h1 {
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+#showcase p {
+    font-size: 20px;
+}
+
+/* Search Bar Component */
+.search-container {
+    background: #ffffff;
+    padding: 25px;
+    margin-top: -50px; /* Pulls the bar 60px into the banner area */
+    border-radius: 8px;
+    /* Stronger shadow makes it look like it's floating above the banner */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25); 
+    position: relative; /* Required for z-index to work */
+    z-index: 9999 !important; /* Forces it to the absolute front layer */
+    width: 100%;
+    max-width: 1100px; /* Matches standard AIUB lab layout widths */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.search-container form {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: nowrap; /* Keeps items in one line on desktop */
+}
+
+.search-container input[type="text"], 
+.search-container select {
+    flex: 2; /* Title/Keyword gets more space */
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.search-container select {
+    flex: 1; /* Category dropdown is smaller */
+}
+
+/* UI Elements */
+.btn-primary {
+    display: inline-block;
+    background: #e8491d;
+    color: #ffffff;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: #c73a15;
+}
+
+/* Job Cards */
+/* Container styling */
+.job-list {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    margin: 20px 0;
+}
+
+.job-list h2 {
+    color: #35424a;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e8491d;
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+/* Table styling */
+.job-list table {
+    width: 100%;
+    border-collapse: collapse; /* Removes double borders */
+    margin-top: 10px;
+}
+
+/* Header styling */
+.job-list thead tr {
+    background-color: #35424a;
+    color: #ffffff;
+    text-align: left;
+}
+
+.job-list th {
+    padding: 15px 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 14px;
+}
+
+/* Body cell styling */
+.job-list td {
+    padding: 15px 12px;
+    border-bottom: 1px solid #eee;
+    color: #444;
+    vertical-align: middle;
+}
+
+/* Row hover effect */
+.job-list tbody tr:hover {
+    background-color: #fcfcfc;
+}
+
+/* Style for buttons inside the 'Actions' column */
+.job-list td a {
+    text-decoration: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    display: inline-block;
+    margin-right: 5px;
+    transition: 0.3s;
+}
+
+/* View Applicants button */
+.job-list td a[href*="view"] {
+    color: #e8491d;
+    border: 1px solid #e8491d;
+}
+
+.job-list td a[href*="view"]:hover {
+    background: #e8491d;
+    color: #fff;
+}
+
+/* Close Job button */
+.job-list td a:not([href*="view"]) {
+    background: #35424a;
+    color: #fff;
+}
+
+.job-card {
+    background: #ffffff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border-left: 6px solid #35424a;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease;
+}
+
+.job-card:hover {
+    transform: translateX(5px);
+}
+
+.job-card h3 {
+    margin-bottom: 8px;
+    color: #35424a;
+}
+
+.job-meta {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 15px;
+}
+
+
+.job-listings-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+    font-size: 0.95rem;
+}
+
+.job-listings-table thead tr {
+    background-color: #35424a;
+    color: #ffffff;
+    text-align: left;
+}
+
+.job-listings-table th, 
+.job-listings-table td {
+    padding: 15px 20px;
+}
+
+/* Alternating row colors and hover effect */
+.job-listings-table tbody tr {
+    border-bottom: 1px solid #eeeeee;
+    transition: background 0.3s ease;
+}
+
+.job-listings-table tbody tr:hover {
+    background-color: #fcfcfc;
+}
+
+/* Applicant name bolding */
+.job-listings-table td:first-child {
+    font-weight: 600;
+    color: #35424a;
+}
+
+/* Status Badge Logic */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Dynamic colors based on standard states */
+.status-badge {
+    background: #e1f7e3; /* Default Green for Partnered/Accepted */
+    color: #1b5e20;
+}
+
+/* Download Link Styling */
+.job-listings-table a[target="_blank"] {
+    color: #e8491d;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 13px;
+    border: 1px solid #e8491d;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.job-listings-table a[target="_blank"]:hover {
+    background: #e8491d;
+    color: #fff;
+}
+
+
+
+.status-badge.pending { background: #fff3cd; color: #856404; }
+.status-badge.accepted { background: #d4edda; color: #155724; }
+.status-badge.rejected { background: #f8d7da; color: #721c24; }
+
+/* Footer */
+.footer {
+    background: #35424a;
+    color: #ffffff;
+    text-align: center;
+    padding: 40px 0;
+    margin-top: 60px;
+}
+
+/* Responsive Adjustments */
+@media(max-width: 768px) {
+    header #branding, 
+    header nav, 
+    header li, 
+    .search-container form {
+        float: none;
+        text-align: center;
+        width: 100%;
+        display: block;
+    }
+    
+    header li {
+        padding: 10px;
+    }
+    
+    .search-container input, 
+    .search-container select, 
+    .search-container button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
