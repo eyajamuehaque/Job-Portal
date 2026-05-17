@@ -24,7 +24,6 @@ $salary_min = isset($_GET['salary_min']) ? floatval($_GET['salary_min']) : null;
 
 $jobs = $jobModel->search($keyword, $category_id, $location, $job_type, $experience_level, $salary_min);
 
-// We also need to get saved job IDs if the user is a seeker to show bookmark buttons
 $savedJobIds = [];
 $role = Session::get('role');
 if ($role === 'seeker') {
@@ -36,7 +35,7 @@ if ($role === 'seeker') {
     }
 }
 
-// Attach extra data for frontend rendering
+
 foreach ($jobs as &$job) {
     $job['isBookmarked'] = in_array($job['id'], $savedJobIds);
     $job['description_short'] = (strlen($job['description']) > 180) 
