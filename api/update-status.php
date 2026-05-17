@@ -9,10 +9,9 @@ require_once '../app/core/Session.php';
 require_once '../app/controllers/EmployerController.php';
 require_once '../app/controllers/RecruiterController.php';
 
-// 1. Initialize session to identify the user
+
 Session::init();
 
-// 2. Security Check: Only Employers or Recruiters can update statuses
 $role = Session::get('role');
 if ($role !== 'employer' && $role !== 'recruiter') {
     header('Content-Type: application/json');
@@ -37,7 +36,7 @@ elseif ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['application_id'])
     $controller->updateApplicantStatus();
 } 
 
-// Fallback for invalid requests
+
 else {
     header('Content-Type: application/json');
     echo json_encode(['success' => false, 'message' => 'Invalid request parameters.']);
