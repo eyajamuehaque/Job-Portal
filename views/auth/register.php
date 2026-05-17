@@ -29,7 +29,7 @@ include '../partials/header.php';
 
         <form action="register.php" method="POST">
             <div class="form-group">
-                <label for="name">Full Name</label>
+                <label for="name">Full Name</label>//
                 <input type="text" name="name" id="name" class="form-control" required placeholder="John Doe">
             </div>
 
