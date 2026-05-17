@@ -23,7 +23,7 @@ class Outreach {
             mysqli_stmt_close($stmt);
            
             if ($result) {
-                // Also insert into messages table so it shows up in the inbox
+                
                 require_once __DIR__ . '/Message.php';
                 $messageModel = new Message($this->db);
                 // Prepend [OUTREACH] tag so the seeker knows it's an outreach message

@@ -11,7 +11,6 @@ Session::init();
 Session::checkRole('admin');
 
 $db = (new Database())->conn;
-// Fetch pending users
 $sql = "SELECT id, name, email, role, created_at FROM users WHERE is_verified = 0 AND (role = 'employer' OR role = 'recruiter')";
 $pendingUsers = mysqli_query($db, $sql);
 

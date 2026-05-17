@@ -6,13 +6,13 @@
 
 require_once '../../app/controllers/AuthController.php';
 
-// Initialize the controller
+
 $authController = new AuthController();
 
-// Handle the registration request and get any error messages
+
 $error = $authController->register();
 
-// Include the header partial
+
 include '../partials/header.php';
 ?>
 
@@ -20,7 +20,7 @@ include '../partials/header.php';
     <div class="job-card" style="max-width: 550px; margin: 40px auto; padding: 40px;">
         <h2 style="text-align: center; margin-bottom: 20px;">Create an Account</h2>
         
-        <!-- Display error message if registration fails -->
+        
         <?php if ($error): ?>
             <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 4px; margin-bottom: 20px; text-align: center;">
                 <?= $error ?>

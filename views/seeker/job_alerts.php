@@ -18,7 +18,7 @@ if (isset($_GET['delete'])) {
 $alerts = $controller->getAlerts();
 $matchingJobs = $controller->getMatchingAlertJobs();
 
-// Instantiate Job model to get categories for the dropdown
+
 $database = new Database();
 $jobModel = new Job($database->conn);
 $categories = $jobModel->getCategories();

@@ -11,9 +11,9 @@ require_once '../../app/controllers/SeekerController.php';
 Session::init();
 Session::checkRole('seeker');
 
-// Initialize Controller and fetch data
+
 $seekerController = new SeekerController();
-// Handle Application Withdrawal
+
 if (isset($_GET['withdraw'])) {
     $seekerController->withdrawApplication(intval($_GET['withdraw']));
 }
