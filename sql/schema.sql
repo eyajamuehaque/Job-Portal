@@ -194,3 +194,26 @@ INSERT INTO categories (name, description) VALUES
 INSERT INTO users (name, email, password_hash, role, is_verified) 
 VALUES ('System Admin', 'admin@portal.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 1);
 -- password is 'password'
+
+-- 14. Platform Settings
+CREATE TABLE settings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    setting_key VARCHAR(50) UNIQUE NOT NULL,
+    setting_value VARCHAR(255) NOT NULL,
+    description TEXT
+) ENGINE=InnoDB;
+
+INSERT INTO settings (setting_key, setting_value, description) VALUES 
+    ('max_jobs_per_employer', '10', 'Maximum number of active jobs an employer can have.'),
+    ('max_applications_per_seeker', '50', 'Maximum pending applications a seeker can have.'),
+    ('resume_visibility', 'public', 'Default resume visibility (public/private).');
+
+-- 15. Announcements
+CREATE TABLE announcements (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    target_role ENUM('all', 'seeker', 'employer', 'recruiter') DEFAULT 'all',
+    is_active TINYINT(1) DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB;

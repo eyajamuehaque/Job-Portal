@@ -26,3 +26,32 @@
         </nav>
     </div>
 </header>
+
+<?php
+// Fetch Announcements
+if (isset($_SESSION['user_id'])) {
+    $role = $_SESSION['role'];
+    require_once __DIR__ . '/../../app/core/Database.php';
+    
+    // We only create connection if it doesn't exist, but here we can just create a new one safely for this simple query.
+    $db_conn = (new Database())->conn;
+    
+    $sql = "SELECT title, message FROM announcements 
+            WHERE is_active = 1 
+            AND (target_role = 'all' OR target_role = ?)";
+            
+    $stmt = mysqli_prepare($db_conn, $sql);
+    if ($stmt) {
+        mysqli_stmt_bind_param($stmt, "s", $role);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+        
+        while ($ann = mysqli_fetch_assoc($result)) {
+            echo '<div style="background: #17a2b8; color: white; padding: 10px 20px; text-align: center; border-bottom: 1px solid #117a8b;">';
+            echo '<strong>' . htmlspecialchars($ann['title']) . ':</strong> ' . htmlspecialchars($ann['message']);
+            echo '</div>';
+        }
+        mysqli_stmt_close($stmt);
+    }
+}
+?>

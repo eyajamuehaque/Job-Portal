@@ -139,6 +139,28 @@ class SeekerController {
             $seekerId = Session::get('user_id');
             $coverLetter = htmlspecialchars($_POST['cover_letter']);
             
+            // Enforce max_applications_per_seeker policy
+            $sql = "SELECT setting_value FROM settings WHERE setting_key = 'max_applications_per_seeker'";
+            $res = mysqli_query($this->db, $sql);
+            $maxApps = 50;
+            if ($res && $row = mysqli_fetch_assoc($res)) {
+                $maxApps = intval($row['setting_value']);
+            }
+            
+            $sql = "SELECT COUNT(*) as count FROM applications WHERE seeker_id = ? AND status = 'pending'";
+            $stmt = mysqli_prepare($this->db, $sql);
+            mysqli_stmt_bind_param($stmt, "i", $seekerId);
+            mysqli_stmt_execute($stmt);
+            $res = mysqli_stmt_get_result($stmt);
+            $currentApps = 0;
+            if ($row = mysqli_fetch_assoc($res)) {
+                $currentApps = $row['count'];
+            }
+            
+            if ($currentApps >= $maxApps) {
+                return "Policy limit reached. You can only have $maxApps pending applications.";
+            }
+
             // Get seeker profile to use their saved resume
             $profile = $this->profileModel->getSeeker($seekerId);
             $resume = $profile['resume_path'];

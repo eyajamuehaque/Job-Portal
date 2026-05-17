@@ -19,6 +19,9 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
         $controller->toggleUserStatus($id);
     } elseif ($_GET['action'] == 'toggle_verify') {
         $controller->toggleUserVerification($id);
+    } elseif ($_GET['action'] == 'reject_verify' && $_SERVER["REQUEST_METHOD"] == "POST") {
+        $reason = $_POST['reason'] ?? '';
+        $controller->rejectUserVerification($id, $reason);
     }
 }
 
@@ -121,6 +124,13 @@ include '../partials/header.php';
                                    onclick="return confirm('Change verification status?');">
                                     <?= $user['is_verified'] ? 'Unverify' : 'Verify Account' ?>
                                 </a>
+                                
+                                <?php if (!$user['is_verified']): ?>
+                                    <button onclick="rejectUser(<?= $user['id'] ?>)" 
+                                            style="border: none; cursor: pointer; padding: 5px 10px; border-radius: 4px; font-size: 12px; display: inline-block; background: #ffc107; color: #333; margin-top: 5px;">
+                                        Reject
+                                    </button>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -129,5 +139,25 @@ include '../partials/header.php';
         </table>
     </div>
 </div>
+
+<script>
+function rejectUser(id) {
+    const reason = prompt("Enter the reason for rejection:");
+    if (reason !== null && reason.trim() !== "") {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = 'users.php?action=reject_verify&id=' + id;
+        
+        const reasonInput = document.createElement('input');
+        reasonInput.type = 'hidden';
+        reasonInput.name = 'reason';
+        reasonInput.value = reason;
+        
+        form.appendChild(reasonInput);
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+</script>
 
 <?php include '../partials/footer.php'; ?>
