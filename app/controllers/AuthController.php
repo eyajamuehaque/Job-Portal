@@ -27,19 +27,14 @@ class AuthController {
             $email = trim($_POST['email']);
             $password = trim($_POST['password']);
 
-            // Basic Validation (Page 19 of your notes)
             if (empty($email) || empty($password)) {
                 return "Please fill in all fields.";
             }
 
-            // Find user in database
             $user = $this->userModel->findByEmail($email);
 
             if ($user) {
-                // Verify password (using standard PHP password_verify)
                 if (password_verify($password, $user['password_hash'])) {
-                    
-                    // Start session and store user data (Page 41 of notes)
                     Session::init();
                     Session::set('user_id', $user['id']);
                     Session::set('name', $user['name']);
@@ -99,7 +94,7 @@ class AuthController {
      * Helper to redirect users to their specific dashboards
      */
     private function redirectByRole($role) {
-    // We use the full path starting from the project root folder
+    
     $basePath = "/JOB-PORTAL/views/";
 
     switch ($role) {
@@ -116,7 +111,6 @@ class AuthController {
             header("Location: " . $basePath . "admin/dashboard.php");
             break;
         default:
-            // Goes back to the public landing page
             header("Location: /JOB-PORTAL/public/index.php");
     }
     exit();
