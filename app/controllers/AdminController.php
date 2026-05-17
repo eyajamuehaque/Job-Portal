@@ -7,13 +7,13 @@
 require_once __DIR__ . '/../core/Database.php';
 require_once __DIR__ . '/../core/Session.php';
 require_once __DIR__ . '/../models/Admin.php';
-require_once __DIR__ . '/../models/Job.php'; // For category methods
+require_once __DIR__ . '/../models/Job.php'; 
 require_once __DIR__ . '/../models/Complaint.php';
 
 class AdminController {
     private $db;
     private $adminModel;
-    private $jobModel; // Re-use Job model for getCategories
+    private $jobModel; 
     private $complaintModel;
 
     public function __construct() {
@@ -24,7 +24,6 @@ class AdminController {
         $this->jobModel = new Job($this->db);
         $this->complaintModel = new Complaint($this->db);
 
-        // Secure this controller - only admins allowed
         Session::checkRole('admin');
     }
 
