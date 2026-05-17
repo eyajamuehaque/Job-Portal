@@ -22,6 +22,11 @@ $message = $seekerController->updateProfile();
 // Fetch current profile data
 $profile = $profileModel->getSeeker(Session::get('user_id'));
 
+// Fetch current user data (for profile pic)
+$userQuery = mysqli_query($db, "SELECT profile_pic FROM users WHERE id = " . Session::get('user_id'));
+$userData = mysqli_fetch_assoc($userQuery);
+$profilePic = $userData['profile_pic'] ?? null;
+
 include '../partials/header.php';
 ?>
 
@@ -40,6 +45,23 @@ include '../partials/header.php';
             <form action="profile.php" method="POST" enctype="multipart/form-data">
                 <!-- Hidden field for existing resume if no new one is uploaded -->
                 <input type="hidden" name="existing_resume" value="<?= $profile['resume_path'] ?? '' ?>">
+
+                <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
+                    <div>
+                        <?php if ($profilePic): ?>
+                            <img src="../../public/uploads/profile_pics/<?= htmlspecialchars($profilePic) ?>" alt="Profile Picture" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #eee;">
+                        <?php else: ?>
+                            <div style="width: 100px; height: 100px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center; color: #999; font-size: 14px;">
+                                No Image
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                    <div>
+                        <label style="display: block; font-weight: bold; margin-bottom: 8px;">Profile Picture</label>
+                        <input type="file" name="profile_pic" accept="image/*">
+                        <p style="margin: 5px 0 0; font-size: 12px; color: #777;">Upload a square image for best results.</p>
+                    </div>
+                </div>
 
                 <div class="form-group">
                     <label>Professional Headline</label>
