@@ -8,7 +8,7 @@ require_once '../app/controllers/SeekerController.php';
 
 header('Content-Type: application/json');
 
-// Ensure user is logged in
+
 if (Session::get('user_id') === null) {
     echo json_encode(['success' => false, 'error' => 'Not logged in']);
     exit();
