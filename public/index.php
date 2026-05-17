@@ -25,6 +25,16 @@ $category_id = isset($_GET['category']) ? intval($_GET['category']) : null;
 $jobs = $jobModel->search($keyword, $category_id);
 $categories = $jobModel->getCategories();
 
+require_once '../app/models/SavedJob.php';
+$savedJobModel = new SavedJob($database->conn);
+$savedJobIds = [];
+if (Session::get('role') === 'seeker') {
+    $savedJobs = $savedJobModel->getByUser(Session::get('user_id'));
+    foreach ($savedJobs as $sj) {
+        $savedJobIds[] = $sj['job_id'];
+    }
+}
+
 // 5. INCLUDE THE HEADER PARTIAL
 // Note: Adjusted path assuming partials is in ../views/partials/
 include '../views/partials/header.php'; 
@@ -72,8 +82,14 @@ include '../views/partials/header.php';
                             : htmlspecialchars($job['description']) ?>
                     </p>
                     
-                    <div style="margin-top: 15px;">
+                    <div style="margin-top: 15px; display: flex; gap: 10px; align-items: center;">
                         <a href="job_details.php?id=<?= $job['id'] ?>" class="btn-primary" style="padding: 8px 18px; font-size: 14px;">View Details</a>
+                        <?php if (Session::get('role') === 'seeker'): ?>
+                            <?php $isBookmarked = in_array($job['id'], $savedJobIds); ?>
+                            <button onclick="toggleBookmark(<?= $job['id'] ?>)" id="bookmarkBtn_<?= $job['id'] ?>" class="btn-primary" style="padding: 8px 18px; font-size: 14px; border: none; cursor: pointer; background-color: <?= $isBookmarked ? '#dc3545' : '#17a2b8' ?>; color: white;">
+                                <?= $isBookmarked ? 'Remove Bookmark' : 'Bookmark' ?>
+                            </button>
+                        <?php endif; ?>
                     </div>
                 </div>
             <?php endforeach; ?>
@@ -89,3 +105,34 @@ include '../views/partials/header.php';
 // 6. INCLUDE THE FOOTER PARTIAL
 include '../views/partials/footer.php'; 
 ?>
+
+<script>
+function toggleBookmark(jobId) {
+    fetch('../api/toggle-bookmark.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ job_id: jobId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const btn = document.getElementById('bookmarkBtn_' + jobId);
+            if (data.status === 'saved') {
+                btn.innerText = 'Remove Bookmark';
+                btn.style.backgroundColor = '#dc3545';
+            } else {
+                btn.innerText = 'Bookmark';
+                btn.style.backgroundColor = '#17a2b8';
+            }
+        } else {
+            alert('An error occurred.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred.');
+    });
+}
+</script>
