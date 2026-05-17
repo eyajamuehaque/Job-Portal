@@ -81,6 +81,24 @@ class SeekerController {
                 $data['resume_path'] = $_POST['existing_resume'] ?? null;
             }
 
+            // Handle Profile Picture Upload
+            if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] == 0) {
+                $picDir = __DIR__ . "/../../public/uploads/profile_pics/";
+                if (!is_dir($picDir)) {
+                    mkdir($picDir, 0777, true);
+                }
+                $picName = time() . "_pic_" . basename($_FILES["profile_pic"]["name"]);
+                $picPath = $picDir . $picName;
+
+                if (move_uploaded_file($_FILES["profile_pic"]["tmp_name"], $picPath)) {
+                    $sqlPic = "UPDATE users SET profile_pic=? WHERE id=?";
+                    $stmtPic = mysqli_prepare($this->db, $sqlPic);
+                    mysqli_stmt_bind_param($stmtPic, "si", $picName, $userId);
+                    mysqli_stmt_execute($stmtPic);
+                    mysqli_stmt_close($stmtPic);
+                }
+            }
+
             // Call the model
             $success = $this->profileModel->saveSeeker($userId, $data);
             
