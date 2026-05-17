@@ -122,26 +122,61 @@ class Job {
      * Search jobs with filters (Used for AJAX search)
      * Role: Job Seeker
      */
-    public function search($keyword = "", $category_id = null) {
-        $keyword = "%" . $keyword . "%";
+    public function search($keyword = "", $category_id = null, $location = "", $job_type = "", $experience_level = "", $salary_min = null) {
+        $keywordParam = "%" . $keyword . "%";
         
         $sql = "SELECT j.*, c.name as category_name 
                 FROM jobs j 
                 JOIN categories c ON j.category_id = c.id 
-                WHERE j.status = 'active' AND (j.title LIKE ? OR j.description LIKE ?)";
-        
-        // Add category filter if provided
-        if ($category_id) {
-            $sql .= " AND j.category_id = ?";
+                WHERE j.status = 'active'";
+
+        $params = [];
+        $types = "";
+
+        if (!empty($keyword)) {
+            $sql .= " AND (j.title LIKE ? OR j.description LIKE ?)";
+            $params[] = $keywordParam;
+            $params[] = $keywordParam;
+            $types .= "ss";
         }
+
+        if (!empty($category_id)) {
+            $sql .= " AND j.category_id = ?";
+            $params[] = $category_id;
+            $types .= "i";
+        }
+
+        if (!empty($location)) {
+            $sql .= " AND j.location LIKE ?";
+            $params[] = "%" . $location . "%";
+            $types .= "s";
+        }
+
+        if (!empty($job_type)) {
+            $sql .= " AND j.job_type = ?";
+            $params[] = $job_type;
+            $types .= "s";
+        }
+
+        if (!empty($experience_level)) {
+            $sql .= " AND j.experience_level = ?";
+            $params[] = $experience_level;
+            $types .= "s";
+        }
+
+        if (!empty($salary_min)) {
+            $sql .= " AND j.salary_min >= ?";
+            $params[] = $salary_min;
+            $types .= "d";
+        }
+
+        $sql .= " ORDER BY j.created_at DESC";
 
         $stmt = mysqli_prepare($this->db, $sql);
 
         if ($stmt) {
-            if ($category_id) {
-                mysqli_stmt_bind_param($stmt, "ssi", $keyword, $keyword, $category_id);
-            } else {
-                mysqli_stmt_bind_param($stmt, "ss", $keyword, $keyword);
+            if (!empty($params)) {
+                mysqli_stmt_bind_param($stmt, $types, ...$params);
             }
 
             mysqli_stmt_execute($stmt);

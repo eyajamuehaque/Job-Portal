@@ -1,19 +1,51 @@
 <?php
 /**
  * api/search-jobs.php
- * JSON endpoint for AJAX job searching.
- * Used by Job Seekers on the main landing page or dashboard.
+ * JSON endpoint for AJAX job searching and filtering.
  */
 
-require_once '../app/controllers/SeekerController.php';
+require_once '../app/core/Database.php';
+require_once '../app/core/Session.php';
+require_once '../app/models/Job.php';
 
-// Instantiate the controller
-// Note: SeekerController automatically checks if the user is a 'seeker' 
-// but since the public landing page also uses search, ensure your 
-// controller allows public search or use a separate logic.
-$seekerController = new SeekerController();
+Session::init();
 
-// The search() method in SeekerController is already designed 
-// to detect 'ajax=1' and return JSON.
-$_GET['ajax'] = 1; 
-$seekerController->search();
+header('Content-Type: application/json');
+
+$database = new Database();
+$jobModel = new Job($database->conn);
+
+$keyword = isset($_GET['keyword']) ? $_GET['keyword'] : "";
+$category_id = isset($_GET['category']) ? intval($_GET['category']) : null;
+$location = isset($_GET['location']) ? $_GET['location'] : "";
+$job_type = isset($_GET['job_type']) ? $_GET['job_type'] : "";
+$experience_level = isset($_GET['experience_level']) ? $_GET['experience_level'] : "";
+$salary_min = isset($_GET['salary_min']) ? floatval($_GET['salary_min']) : null;
+
+$jobs = $jobModel->search($keyword, $category_id, $location, $job_type, $experience_level, $salary_min);
+
+// We also need to get saved job IDs if the user is a seeker to show bookmark buttons
+$savedJobIds = [];
+$role = Session::get('role');
+if ($role === 'seeker') {
+    require_once '../app/models/SavedJob.php';
+    $savedJobModel = new SavedJob($database->conn);
+    $savedJobs = $savedJobModel->getByUser(Session::get('user_id'));
+    foreach ($savedJobs as $sj) {
+        $savedJobIds[] = $sj['job_id'];
+    }
+}
+
+// Attach extra data for frontend rendering
+foreach ($jobs as &$job) {
+    $job['isBookmarked'] = in_array($job['id'], $savedJobIds);
+    $job['description_short'] = (strlen($job['description']) > 180) 
+        ? substr(htmlspecialchars($job['description']), 0, 180) . '...' 
+        : htmlspecialchars($job['description']);
+    $job['title_safe'] = htmlspecialchars($job['title']);
+    $job['location_safe'] = htmlspecialchars($job['location']);
+    $job['job_type_safe'] = htmlspecialchars($job['job_type']);
+}
+
+echo json_encode(['success' => true, 'jobs' => $jobs, 'role' => $role]);
+?>

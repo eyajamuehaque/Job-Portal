@@ -23,7 +23,12 @@ $db = $database->conn;
 // 2. Optimized SQL: This handles both direct Employer posts and Recruiter client posts
 $sql = "SELECT j.*, 
         COALESCE(e.name, r.name) AS company_display_name,
-        COALESCE(e.email, r.email) AS company_email
+        COALESCE(e.email, r.email) AS company_email,
+        CASE 
+            WHEN j.employer_id IS NOT NULL THEN 'Employer'
+            WHEN j.recruiter_id IS NOT NULL THEN 'Recruiter Agency'
+            ELSE 'Unknown'
+        END AS posted_by_type
         FROM jobs j
         LEFT JOIN users e ON j.employer_id = e.id 
         LEFT JOIN users r ON j.recruiter_id = r.id
@@ -72,6 +77,7 @@ if (Session::get('role') === 'seeker') {
                 
                 <p style="font-size: 18px; color: #777;">
                     <strong><?= htmlspecialchars($job['company_display_name']) ?></strong> 
+                    <span style="font-size: 14px; color: #999;">(Posted by <?= htmlspecialchars($job['posted_by_type']) ?>)</span>
                     <span style="margin: 0 10px;">•</span> 
                     <?= htmlspecialchars($job['location']) ?>
                 </p>
@@ -90,14 +96,36 @@ if (Session::get('role') === 'seeker') {
                         <?= date('M d, Y', strtotime($job['created_at'])) ?>
                     </p>
                 </div>
+                <div>
+                    <p style="margin: 0; color: #888; font-size: 14px;">Application Deadline</p>
+                    <p style="margin: 5px 0; font-weight: bold; color: #e74c3c;">
+                        <?= date('M d, Y', strtotime($job['deadline'])) ?>
+                    </p>
+                </div>
             </div>
 
-            <div style="line-height: 1.8; color: #444; font-size: 16px;">
+            <div style="line-height: 1.8; color: #444; font-size: 16px; margin-bottom: 30px;">
                 <h3 style="color: #35424a; border-left: 4px solid #e8491d; padding-left: 15px;">Job Description</h3>
                 <p style="white-space: pre-line; margin-top: 15px;">
                     <?= htmlspecialchars($job['description']) ?>
                 </p>
             </div>
+
+            <div style="line-height: 1.8; color: #444; font-size: 16px; margin-bottom: 30px;">
+                <h3 style="color: #35424a; border-left: 4px solid #17a2b8; padding-left: 15px;">Requirements</h3>
+                <p style="white-space: pre-line; margin-top: 15px;">
+                    <?= htmlspecialchars($job['requirements']) ?>
+                </p>
+            </div>
+
+            <?php if (!empty($job['benefits'])): ?>
+            <div style="line-height: 1.8; color: #444; font-size: 16px;">
+                <h3 style="color: #35424a; border-left: 4px solid #28a745; padding-left: 15px;">Benefits</h3>
+                <p style="white-space: pre-line; margin-top: 15px;">
+                    <?= htmlspecialchars($job['benefits']) ?>
+                </p>
+            </div>
+            <?php endif; ?>
 
             <div style="margin-top: 50px; padding-top: 30px; border-top: 1px solid #eee; display: flex; align-items: center; justify-content: space-between;">
                 

@@ -146,7 +146,7 @@ class SeekerController {
             $result = $this->applicationModel->apply($jobId, $seekerId, $coverLetter, $resume);
 
             if ($result === true) {
-                header("Location: applications.php?msg=Applied successfully!");
+                header("Location: ../views/seeker/dashboard.php?msg=Applied successfully!");
                 exit();
             } else {
                 return $result; // Returns the error message string

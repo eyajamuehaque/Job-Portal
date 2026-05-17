@@ -19,6 +19,7 @@ if (isset($_GET['withdraw'])) {
 }
 
 $applications = $seekerController->getMyApplications();
+$matchingJobsCount = count($seekerController->getMatchingAlertJobs());
 
 // Include the header partial
 include '../partials/header.php';
@@ -30,7 +31,12 @@ include '../partials/header.php';
         <div>
             <a href="profile.php" class="btn-primary" style="background: #35424a;">Edit Profile</a>
             <a href="bookmarks.php" class="btn-primary" style="background: #17a2b8;">Bookmarks</a>
-            <a href="job_alerts.php" class="btn-primary" style="background: #ffc107; color: #333;">Alerts</a>
+            <a href="job_alerts.php" class="btn-primary" style="background: #ffc107; color: #333; position: relative;">
+                Alerts
+                <?php if ($matchingJobsCount > 0): ?>
+                    <span style="position: absolute; top: -5px; right: -5px; background: red; color: white; border-radius: 50%; padding: 2px 6px; font-size: 12px; font-weight: bold;"><?= $matchingJobsCount ?></span>
+                <?php endif; ?>
+            </a>
             <a href="messages.php" class="btn-primary" style="background: #28a745;">Messages</a>
             <a href="complaints.php" class="btn-primary" style="background: #dc3545;">Complaints</a>
             <a href="../../public/index.php" class="btn-primary">Browse Jobs</a>
