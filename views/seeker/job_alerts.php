@@ -16,6 +16,7 @@ if (isset($_GET['delete'])) {
 }
 
 $alerts = $controller->getAlerts();
+$matchingJobs = $controller->getMatchingAlertJobs();
 
 // Instantiate Job model to get categories for the dropdown
 $database = new Database();
@@ -111,6 +112,25 @@ $categories = $jobModel->getCategories();
                         <strong>Type:</strong> <?= htmlspecialchars($alert['job_type'] ?: 'Any') ?>
                     </p>
                     <a href="job_alerts.php?delete=<?= $alert['id'] ?>" class="btn-danger" onclick="return confirm('Are you sure you want to delete this alert?');">Delete</a>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </div>
+
+    <h3 style="margin-top: 40px;">Jobs Matching Your Alerts</h3>
+    <div id="matching-jobs-list">
+        <?php if (empty($matchingJobs)): ?>
+            <p>No jobs currently match your active alerts.</p>
+        <?php else: ?>
+            <?php foreach ($matchingJobs as $job): ?>
+                <div class="alert-card" style="border-left: 4px solid #28a745;">
+                    <h4 style="margin-top: 0; margin-bottom: 5px;"><?= htmlspecialchars($job['title']) ?></h4>
+                    <p style="margin-top: 0;">
+                        <strong>Company:</strong> <?= htmlspecialchars($job['company_name']) ?> |
+                        <strong>Location:</strong> <?= htmlspecialchars($job['location']) ?> |
+                        <strong>Type:</strong> <span style="color: #e8491d;"><?= htmlspecialchars($job['job_type']) ?></span>
+                    </p>
+                    <a href="../../public/job_details.php?id=<?= $job['id'] ?>" class="btn">View Details</a>
                 </div>
             <?php endforeach; ?>
         <?php endif; ?>
