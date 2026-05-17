@@ -39,6 +39,13 @@ $job = mysqli_fetch_assoc($result);
 if (!$job) {
     die("<div class='container'><h2>Job not found.</h2><a href='../index.php'>Return Home</a></div>");
 }
+
+require_once '../app/models/SavedJob.php';
+$savedJobModel = new SavedJob($db);
+$isBookmarked = false;
+if (Session::get('role') === 'seeker') {
+    $isBookmarked = $savedJobModel->isSaved(Session::get('user_id'), $job_id);
+}
 ?>
 
 <!DOCTYPE html>
@@ -99,9 +106,14 @@ if (!$job) {
                 </a>
 
                 <?php if (Session::get('role') === 'seeker'): ?>
-                    <a href="apply.php?id=<?= $job['id'] ?>" class="btn-primary" style="padding: 15px 40px; text-decoration: none; border-radius: 6px; font-weight: bold;">
-                        Apply Now
-                    </a>
+                    <div style="display: flex; gap: 15px;">
+                        <button onclick="toggleBookmark(<?= $job['id'] ?>)" id="bookmarkBtn" class="btn-primary" style="padding: 15px 30px; border: none; cursor: pointer; border-radius: 6px; font-weight: bold; background-color: <?= $isBookmarked ? '#dc3545' : '#17a2b8' ?>; color: white;">
+                            <?= $isBookmarked ? 'Remove Bookmark' : 'Bookmark Job' ?>
+                        </button>
+                        <a href="apply.php?id=<?= $job['id'] ?>" class="btn-primary" style="padding: 15px 40px; text-decoration: none; border-radius: 6px; font-weight: bold;">
+                            Apply Now
+                        </a>
+                    </div>
                 <?php elseif (!Session::get('role')): ?>
                     <a href="/JOB-PORTAL/views/auth/login.php" style="color: #e8491d; font-weight: bold; text-decoration: none;">
                         Login as Seeker to Apply
@@ -113,6 +125,37 @@ if (!$job) {
             </div>
         </div>
     </div>
+
+<script>
+function toggleBookmark(jobId) {
+    fetch('../api/toggle-bookmark.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ job_id: jobId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const btn = document.getElementById('bookmarkBtn');
+            if (data.status === 'saved') {
+                btn.innerText = 'Remove Bookmark';
+                btn.style.backgroundColor = '#dc3545';
+            } else {
+                btn.innerText = 'Bookmark Job';
+                btn.style.backgroundColor = '#17a2b8';
+            }
+        } else {
+            alert('An error occurred.');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred.');
+    });
+}
+</script>
 
 </body>
 </html>
