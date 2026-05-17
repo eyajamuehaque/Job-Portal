@@ -25,7 +25,7 @@ class SeekerController {
     private $complaintModel;
 
     public function __construct() {
-        // Initialize Database and Models
+        
         $database = new Database();
         $this->db = $database->conn;
         
@@ -48,7 +48,7 @@ class SeekerController {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $userId = Session::get('user_id');
             
-            // Collect form data (Page 39 of notes)
+            
             $data = [
                 'headline'           => htmlspecialchars($_POST['headline']),
                 'summary'            => htmlspecialchars($_POST['summary']),
@@ -57,15 +57,15 @@ class SeekerController {
                 'education_level'    => htmlspecialchars($_POST['education_level']),
                 'expected_salary'    => floatval($_POST['expected_salary']),
                 'preferred_location' => htmlspecialchars($_POST['preferred_location']),
-                'resume_path'        => $_POST['existing_resume'] // Default to old one
+                'resume_path'        => $_POST['existing_resume'] 
             ];
 
-            // Handle Resume Upload (Page 40 & 100 of notes)
+           
             if (isset($_FILES['resume']) && $_FILES['resume']['error'] == 0) {
-                // Fix: Use __DIR__ to get the absolute path to the public folder
+
                 $targetDir = __DIR__ . "/../../public/uploads/resumes/";
                 
-                // Ensure the directory exists, create it if not
+                
                 if (!is_dir($targetDir)) {
                     mkdir($targetDir, 0777, true);
                 }
@@ -77,7 +77,6 @@ class SeekerController {
                     $data['resume_path'] = $fileName;
                 }
             } else {
-                // Optional: Keep the old resume path if no new file is uploaded
                 $data['resume_path'] = $_POST['existing_resume'] ?? null;
             }
 
@@ -99,7 +98,7 @@ class SeekerController {
                 }
             }
 
-            // Call the model
+            
             $success = $this->profileModel->saveSeeker($userId, $data);
             
             if ($success) {
@@ -112,7 +111,6 @@ class SeekerController {
 
     /**
      * Handle Job Search (Used by normal page and AJAX)
-     * Page 55 (AJAX) and 64 (JSON) of notes
      */
     public function search() {
         $keyword = isset($_GET['keyword']) ? $_GET['keyword'] : "";
@@ -120,7 +118,7 @@ class SeekerController {
 
         $jobs = $this->jobModel->search($keyword, $category);
 
-        // If it's an AJAX request, return JSON (Page 64 of notes)
+        // If it's an AJAX request, return JSON
         if (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
             header('Content-Type: application/json');
             echo json_encode($jobs);
@@ -171,7 +169,7 @@ class SeekerController {
                 header("Location: ../views/seeker/dashboard.php?msg=Applied successfully!");
                 exit();
             } else {
-                return $result; // Returns the error message string
+                return $result; 
             }
         }
     }
