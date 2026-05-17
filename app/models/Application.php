@@ -16,7 +16,7 @@ class Application {
      * Role: Job Seeker
      */
     public function apply($job_id, $seeker_id, $cover_letter, $resume_path, $recruiter_id = null) {
-        // Prevent duplicate applications
+       
         if ($this->hasAlreadyApplied($job_id, $seeker_id)) {
             return "You have already applied for this position.";
         }
