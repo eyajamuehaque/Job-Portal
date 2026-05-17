@@ -201,6 +201,11 @@ class SeekerController {
         exit();
     }
 
+    public function getMatchingAlertJobs() {
+        $seekerId = Session::get('user_id');
+        return $this->jobAlertModel->getMatchingJobs($seekerId);
+    }
+
     /**
      * Messaging Handlers
      */
