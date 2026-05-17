@@ -3,7 +3,7 @@
  * app/controllers/EmployerController.php
  * Handles Employer specific logic: Company Profiles, Job Postings, and Applicant Management.
  */
-
+ 
 require_once __DIR__ . '/../core/Database.php';
 require_once __DIR__ . '/../core/Session.php';
 require_once __DIR__ . '/../models/Profile.php';
@@ -11,7 +11,7 @@ require_once __DIR__ . '/../models/Job.php';
 require_once __DIR__ . '/../models/Application.php';
 require_once __DIR__ . '/../models/Message.php';
 require_once __DIR__ . '/../models/Complaint.php';
-
+ 
 class EmployerController {
     private $db;
     private $profileModel;
@@ -19,29 +19,29 @@ class EmployerController {
     private $applicationModel;
     private $messageModel;
     private $complaintModel;
-
+ 
     public function __construct() {
         // Initialize Database and Models
         $database = new Database();
         $this->db = $database->conn;
-        
+       
         $this->profileModel = new Profile($this->db);
         $this->jobModel = new Job($this->db);
         $this->applicationModel = new Application($this->db);
         $this->messageModel = new Message($this->db);
         $this->complaintModel = new Complaint($this->db);
-
+ 
         // Secure this controller - only employers allowed
         Session::checkRole('employer');
     }
-
+ 
     /**
      * Handle Company Profile Update
      */
     public function updateProfile() {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $userId = Session::get('user_id');
-            
+           
             $data = [
                 'company_name' => htmlspecialchars($_POST['company_name']),
                 'industry'     => htmlspecialchars($_POST['industry']),
@@ -51,7 +51,7 @@ class EmployerController {
                 'address'      => htmlspecialchars($_POST['address']),
                 'logo_path'    => $_POST['existing_logo']
             ];
-
+ 
             // Handle Logo Upload (Page 40 of notes)
             if (isset($_FILES['logo']) && $_FILES['logo']['error'] == 0) {
                 $targetDir = __DIR__ . "/../../public/uploads/logos/";
@@ -60,16 +60,39 @@ class EmployerController {
                     $data['logo_path'] = $fileName;
                 }
             }
-
+ 
             $success = $this->profileModel->saveEmployer($userId, $data);
             return $success ? "Company profile updated!" : "Update failed.";
         }
     }
-
+ 
     public function postJob() {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $employerId = Session::get('user_id');
-            
+           
+            // Enforce max_jobs_per_employer policy
+            $sql = "SELECT setting_value FROM settings WHERE setting_key = 'max_jobs_per_employer'";
+            $res = mysqli_query($this->db, $sql);
+            $maxJobs = 10;
+            if ($res && $row = mysqli_fetch_assoc($res)) {
+                $maxJobs = intval($row['setting_value']);
+            }
+           
+            $sql = "SELECT COUNT(*) as count FROM jobs WHERE employer_id = ? AND status = 'active'";
+            $stmt = mysqli_prepare($this->db, $sql);
+            mysqli_stmt_bind_param($stmt, "i", $employerId);
+            mysqli_stmt_execute($stmt);
+            $res = mysqli_stmt_get_result($stmt);
+            $currentJobs = 0;
+            if ($row = mysqli_fetch_assoc($res)) {
+                $currentJobs = $row['count'];
+            }
+           
+            if ($currentJobs >= $maxJobs) {
+                header("Location: dashboard.php?error=Policy limit reached. You can only have $maxJobs active jobs.");
+                exit();
+            }
+ 
             $success = $this->jobModel->create(
                 $employerId,
                 intval($_POST['category_id']),
@@ -84,7 +107,7 @@ class EmployerController {
                 $_POST['salary_max'],
                 $_POST['deadline'] ?? date('Y-m-d', strtotime('+30 days'))
             );
-
+ 
             if ($success) {
                 header("Location: dashboard.php?msg=Job posted successfully!");
                 exit();
@@ -92,21 +115,21 @@ class EmployerController {
             return "Error posting job.";
         }
     }
-
+ 
     /**
      * Edit a Job Posting
      */
     public function editJob() {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $jobId = intval($_POST['job_id']);
-            
+           
             // Verify ownership first (for security, ideally checking employer_id matches)
             $job = $this->jobModel->getById($jobId);
             if (!$job || $job['employer_id'] != Session::get('user_id')) {
                 header("Location: dashboard.php?error=Unauthorized edit.");
                 exit();
             }
-
+ 
             $success = $this->jobModel->edit(
                 $jobId,
                 intval($_POST['category_id']),
@@ -121,7 +144,7 @@ class EmployerController {
                 $_POST['salary_max'],
                 $_POST['deadline'] ?? date('Y-m-d', strtotime('+30 days'))
             );
-
+ 
             if ($success) {
                 header("Location: dashboard.php?msg=Job updated successfully!");
                 exit();
@@ -129,7 +152,7 @@ class EmployerController {
             return "Error updating job.";
         }
     }
-
+ 
     /**
      * Delete a Job Posting
      */
@@ -143,7 +166,7 @@ class EmployerController {
         }
         exit();
     }
-
+ 
     /**
      * AJAX Toggle Job Status (Active/Closed)
      * Requirement: AJAX with JSON response (Page 55 & 64)
@@ -152,15 +175,15 @@ class EmployerController {
         if (isset($_GET['job_id']) && isset($_GET['status'])) {
             $jobId = intval($_GET['job_id']);
             $status = $_GET['status']; // 'active' or 'closed'
-
+ 
             $success = $this->jobModel->updateStatus($jobId, $status);
-
+ 
             header('Content-Type: application/json');
             echo json_encode(['success' => $success, 'new_status' => $status]);
             exit();
         }
     }
-
+ 
     /**
      * AJAX Update Application Status
      * Requirement: drop-down update via AJAX
@@ -169,15 +192,15 @@ class EmployerController {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $appId = intval($_POST['application_id']);
             $status = $_POST['status'];
-
+ 
             $success = $this->applicationModel->updateStatus($appId, $status);
-
+ 
             header('Content-Type: application/json');
             echo json_encode(['success' => $success]);
             exit();
         }
     }
-
+ 
     /**
      * Dashboard Data
      */
@@ -185,7 +208,7 @@ class EmployerController {
         $employerId = Session::get('user_id');
         return $this->jobModel->getByEmployer($employerId);
     }
-
+ 
     /**
      * Messaging Handlers
      */
@@ -193,21 +216,21 @@ class EmployerController {
         $employerId = Session::get('user_id');
         return $this->messageModel->getInboxSummary($employerId);
     }
-
+ 
     public function getConversation($contactId) {
         $employerId = Session::get('user_id');
         $this->messageModel->markAsRead($employerId, $contactId);
         return $this->messageModel->getConversation($employerId, $contactId);
     }
-
+ 
     public function sendMessage() {
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $employerId = Session::get('user_id');
             $recipientId = intval($_POST['recipient_id']);
             $body = htmlspecialchars($_POST['body']);
-            
+           
             $result = $this->messageModel->send($employerId, $recipientId, $body);
-            
+           
             if ($result) {
                 header("Location: messages.php?contact_id=" . $recipientId);
             } else {
@@ -216,7 +239,7 @@ class EmployerController {
             exit();
         }
     }
-
+ 
     /**
      * Complaint Handler
      */
@@ -225,9 +248,9 @@ class EmployerController {
             $employerId = Session::get('user_id');
             $subjectId = intval($_POST['subject_id'] ?? 0);
             $description = htmlspecialchars($_POST['description']);
-            
+           
             $result = $this->complaintModel->submit($employerId, $subjectId, $description);
-            
+           
             if ($result) {
                 header("Location: complaints.php?msg=Complaint submitted successfully!");
             } else {
