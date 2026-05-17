@@ -1,8 +1,5 @@
 <?php
-/**
- * views/recruiter/dashboard.php
- * Main dashboard for Recruiters to manage multi-client job postings.
- */
+
 
 require_once '../../app/core/Session.php';
 require_once '../../app/controllers/RecruiterController.php';
@@ -30,8 +27,8 @@ include '../partials/header.php';
             <a href="messages.php" class="btn-primary" style="background: #28a745;">Messages</a>
             <a href="complaints.php" class="btn-primary" style="background: #dc3545;">Complaints</a>
             <a href="client_report.php" class="btn-primary" style="background:#6610f2;">Client Report</a>
-            <a href="outreach_history.php" class="btn-primary" style="background: #6f42c1;">Outreach History</a>
-            <a href="pipeline.php" class="btn-primary" style="background: #20c997;">Candidate Pipeline</a>
+        
+        
             <a href="post_job.php" class="btn-primary">Post Job for Client</a>
         </div>
     </div>
