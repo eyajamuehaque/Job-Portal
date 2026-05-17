@@ -135,7 +135,6 @@ class Admin {
      * Reject User Verification Request
      */
     public function rejectUserVerification($userId, $reason) {
-        // Ensure user is unverified
         $sql = "UPDATE users SET is_verified = 0 WHERE id = ? AND role != 'admin'";
         $stmt = mysqli_prepare($this->db, $sql);
         if ($stmt) {
