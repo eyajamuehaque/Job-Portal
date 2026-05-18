@@ -59,29 +59,39 @@ $bookmarks = $controller->getBookmarks();
 
 <script>
 function toggleBookmark(jobId) {
-    fetch('../../api/toggle-bookmark.php', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ job_id: jobId })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success && data.status === 'removed') {
-            // Remove the card from the UI
-            document.getElementById('job-card-' + jobId).remove();
-            
-            // Show empty message if no more cards
-            if (document.querySelectorAll('.job-card').length === 0) {
-                document.getElementById('bookmarks-list').innerHTML = '<p>You haven\'t bookmarked any jobs yet.</p>';
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '../../api/toggle-bookmark.php', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    
+    xhr.onload = function() {
+        if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+                var data = JSON.parse(xhr.responseText);
+                if (data.success && data.status === 'removed') {
+                    // Remove the card from the UI
+                    document.getElementById('job-card-' + jobId).remove();
+                    
+                    // Show empty message if no more cards
+                    if (document.querySelectorAll('.job-card').length === 0) {
+                        document.getElementById('bookmarks-list').innerHTML = '<p>You haven\'t bookmarked any jobs yet.</p>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while removing the bookmark.');
             }
+        } else {
+            console.error('Error:', xhr.statusText);
+            alert('An error occurred while removing the bookmark.');
         }
-    })
-    .catch((error) => {
-        console.error('Error:', error);
+    };
+    
+    xhr.onerror = function() {
+        console.error('Error: Network request failed');
         alert('An error occurred while removing the bookmark.');
-    });
+    };
+    
+    xhr.send(JSON.stringify({ job_id: jobId }));
 }
 </script>
 

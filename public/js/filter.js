@@ -3,10 +3,13 @@ document.querySelectorAll('.filter-input').forEach(input => {
         const category = document.querySelector('#category-filter').value;
         const type = document.querySelector('#type-filter').value;
         
-        fetch(`../api/get_jobs.php?category=${category}&type=${type}`)
-            .then(res => res.text())
-            .then(data => {
-                document.querySelector('#job-listings').innerHTML = data;
-            });
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', `../api/get_jobs.php?category=${category}&type=${type}`, true);
+        xhr.onload = function() {
+            if (xhr.status >= 200 && xhr.status < 300) {
+                document.querySelector('#job-listings').innerHTML = xhr.responseText;
+            }
+        };
+        xhr.send();
     });
 });
