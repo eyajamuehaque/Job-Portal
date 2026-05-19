@@ -89,3 +89,5 @@ include '../partials/header.php';
 <script src="../../public/js/status-updates.js"></script>
 
 <?php include '../partials/footer.php'; ?>
+
+//
