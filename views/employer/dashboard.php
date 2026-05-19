@@ -24,11 +24,21 @@ include '../partials/header.php';
 ?>
 
 <div class="container" style="margin-top: 30px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-        <h1>Employer Dashboard</h1>
-        <div>
-            <a href="profile.php" class="btn-primary" style="background: #35424a;">Company Profile</a>
-            <a href="post_job.php" class="btn-primary">Post New Job</a>
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px;">
+        <h1 style="margin: 0;">Employer Dashboard</h1>
+        <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 10px;">
+            <div>
+                <a href="analytics.php" class="btn-primary" style="background: #e8491d;">Analytics</a>
+                <a href="shortlisted.php" class="btn-primary" style="background: #17a2b8;">Shortlisted</a>
+                <a href="profile.php" class="btn-primary" style="background: #35424a;">Company Profile</a>
+                <a href="post_job.php" class="btn-primary">Post New Job</a>
+            </div>
+            <!-- Secondary Navigation -->
+            <div>
+                <a href="messages.php" class="btn-primary" style="background: #ffc107; color: #333;">Messages</a>
+                <a href="recruiters.php" class="btn-primary" style="background: #28a745;">Linked Recruiters</a>
+                <a href="complaints.php" class="btn-primary" style="background: #dc3545;">Support/Complaints</a>
+            </div>
         </div>
     </div>
 
@@ -47,6 +57,7 @@ include '../partials/header.php';
                     <tr>
                         <th>Job Title</th>
                         <th>Posted Date</th>
+                        <th>Deadline</th>
                         <th>Type</th>
                         <th>Status</th>
                         <th>Actions</th>
@@ -54,9 +65,16 @@ include '../partials/header.php';
                 </thead>
                 <tbody>
                     <?php foreach ($jobsResult as $job): ?>
+                        <?php 
+                            $deadline = new DateTime($job['deadline']);
+                            $today = new DateTime();
+                            $days_left = $today->diff($deadline)->format('%r%a');
+                            $deadlineText = $days_left < 0 ? 'Expired' : ($days_left == 0 ? 'Today' : $days_left . ' days left');
+                        ?>
                         <tr id="job-row-<?= $job['id'] ?>">
                             <td><strong><?= htmlspecialchars($job['title']) ?></strong></td>
                             <td><?= date('M d, Y', strtotime($job['created_at'])) ?></td>
+                            <td><?= $deadlineText ?></td>
                             <td><?= htmlspecialchars($job['job_type']) ?></td>
                             <td>
                                 <span id="status-badge-<?= $job['id'] ?>" class="badge" style="background: <?= $job['status'] == 'active' ? '#d1e7dd' : '#f8d7da' ?>; color: #333;">
@@ -89,5 +107,3 @@ include '../partials/header.php';
 <script src="../../public/js/status-updates.js"></script>
 
 <?php include '../partials/footer.php'; ?>
-
-//

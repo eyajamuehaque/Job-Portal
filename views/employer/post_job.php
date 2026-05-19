@@ -81,6 +81,11 @@ include '../partials/header.php';
                     </div>
                 </div>
 
+                <div style="margin-top: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Application Deadline *</label>
+                    <input type="date" name="deadline" class="form-control" required style="width: 100%; padding: 8px; box-sizing: border-box;">
+                </div>
+
                 <div style="margin-top: 30px; display: flex; gap: 10px;">
                     <button type="submit" class="btn-primary">Publish Job Posting</button>
                     <a href="dashboard.php" class="btn-primary" style="background: #35424a;">Cancel</a>
@@ -91,5 +96,3 @@ include '../partials/header.php';
 </div>
 
 <?php include '../partials/footer.php'; ?>
-
-//
